@@ -17,7 +17,7 @@ public class Game {
     private int points;
     private enum resultGame {Win,Loose};
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="playerId", nullable=false)
-    private Player player;
+   // @ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name="playerId", nullable=false)
+    //private Player player;
 }
