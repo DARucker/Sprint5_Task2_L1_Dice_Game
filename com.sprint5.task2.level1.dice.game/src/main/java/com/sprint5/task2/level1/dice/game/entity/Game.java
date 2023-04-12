@@ -13,11 +13,10 @@ public class Game {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
-    private int playerId;
     private int points;
     private enum resultGame {Win,Loose};
 
-   // @ManyToOne(fetch = FetchType.LAZY)
-    //@JoinColumn(name="playerId", nullable=false)
-    //private Player player;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="playerId")
+    private Player player;
 }

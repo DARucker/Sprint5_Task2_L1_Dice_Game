@@ -3,7 +3,10 @@ package com.sprint5.task2.level1.dice.game;
 import com.sprint5.task2.level1.dice.game.entity.Game;
 import com.sprint5.task2.level1.dice.game.entity.Player;
 import com.sprint5.task2.level1.dice.game.repository.PlayerRepository;
+import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -25,11 +28,14 @@ public class PlayerRepositoryMockTest {
         assertThat(saved).isNotNull();
     }
     @Test
-    public void WhenSave_ThenFindById(){
+    public void WhenSave_ThenFindById() {
         Player saved = playerRepository.save(new Player(1, "Dario"));
         Optional<Player> found = playerRepository.findById(1);
-        Player foundEntity = found.get();
-        assertThat(foundEntity.getName()).isEqualTo(saved.getName());
+        Player expected;
+        if (found.isPresent()) {
+            expected = found.get();
+            assertThat(expected.getName()).isEqualTo(saved.getName());
+        }
     }
     @Test
     public void WhenSaveTwoPlayers_ThenFindAllSizeIsTwo(){

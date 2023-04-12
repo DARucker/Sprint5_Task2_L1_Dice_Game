@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Calendar;
 import java.util.List;
 
 @Data
@@ -14,16 +15,29 @@ import java.util.List;
 @Table(name="players")
 public class Player {
 
-    public Player(int id, String name){
-        this.id = id;
-        this.name = name;
-    }
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
-    @OneToMany//(mappedBy="Player")
+    @OneToMany(mappedBy="player")
     private List<Game> games;
+    @Column(name = "registry_date")
+    @Temporal(TemporalType.DATE)
+    private Calendar registDate;
 
 
+    public Player(int id, String name){
+        this.id = id;
+        this.name = name;
+    }
+
+    public Player(List<Game> games) {
+        this.games = games;
+    }
+
+    public Player(int id, String name, Calendar registDate) {
+        this.id = id;
+        this.name = name;
+        this.registDate = registDate;
+    }
 }
