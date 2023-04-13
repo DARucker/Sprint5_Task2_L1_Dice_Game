@@ -8,10 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
+import org.springframework.web.server.ResponseStatusException;
 
 
+import java.util.Calendar;
 import java.util.List;
 @RequiredArgsConstructor
 @Service
@@ -26,8 +29,15 @@ public class PlayerServiceImpl implements IPlayerSevice {
     }
 
     @Override
-    public Playerdto create(Playerdto playerdto) {
-        return null;
+    public Player create(Playerdto playerdto) {
+
+        Player playerDb = playerRepository.findByName(playerdto.getName());
+        if(playerDb != null){
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Te player with name " + playerdto.getName() + " exists.");
+        }
+        playerDb.setName(playerdto.getName());
+        playerDb.setRegistDate(Calendar.getInstance());
+        return playerRepository.save(playerDb);
     }
 
     @Override
@@ -67,6 +77,6 @@ public class PlayerServiceImpl implements IPlayerSevice {
     @Override
     public Player dtoToEntity(Playerdto playerdto) {
         Player player = modelMapper().map(playerdto, Player.class);
-        return null;
+        return player;
     }
 }

@@ -37,6 +37,7 @@ public class PlayerController {
     @ApiResponse(responseCode = "500", description = "Internal Server Error while crating the player", content = @Content)
     public ResponseEntity<Playerdto> createPlayer(@RequestBody Playerdto playerdto){
 
+        playerSevice.create(playerdto);
 
         return null;
     }

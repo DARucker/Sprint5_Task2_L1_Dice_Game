@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface IPlayerSevice {
 
-    Playerdto create(Playerdto playerdto);
+    Player create(Playerdto playerdto);
     Playerdto findById(int id);
     List<Playerdto> findAll();
     Playerdto update(Playerdto playerdto);
