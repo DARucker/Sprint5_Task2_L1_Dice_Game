@@ -2,15 +2,18 @@ package com.sprint5.task2.level1.dice.game.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 import java.util.Calendar;
 import java.util.List;
 
 @Data
-//@AllArgsConstructor
+@AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name="players")
 public class Player {

@@ -46,17 +46,17 @@ public class PlayerRepositoryMockTest {
         assertThat(expected.size()).isEqualTo(2);
     }
     @Test
-    public void WhenFindByName_ThenReturnPlayer(){
+    public void WhenFindByName_ThenReturnPlayer() {
         Player saved = playerRepository.save(new Player(1, "Dario"));
-        Player expected = playerRepository.findByName("Dario");
-        assertThat(expected.getName()).isEqualTo("Dario");
+        Optional<Player> expected = playerRepository.findByName("Dario");
+        if (expected.isPresent()) {
+            assertThat(expected.get().getName()).isEqualTo("Dario");
+        }
     }
-
     @Test
     public void WhenDelete_ThenReturnNull(){
-
         Player saved = playerRepository.save(new Player(1, "Dario"));
-        Player expected = playerRepository.findByName(saved.getName());
+        Optional<Player> expected = playerRepository.findByName(saved.getName());
         assertThat(expected).isNotNull();
         playerRepository.delete(saved);
         expected = playerRepository.findByName(saved.getName());

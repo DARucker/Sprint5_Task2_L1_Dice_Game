@@ -16,7 +16,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Calendar;
 import java.util.List;
-@RequiredArgsConstructor
+import java.util.Optional;
+
+//@RequiredArgsConstructor
 @Service
 public class PlayerServiceImpl implements IPlayerSevice {
 
@@ -27,18 +29,22 @@ public class PlayerServiceImpl implements IPlayerSevice {
     public ModelMapper modelMapper(){
         return new ModelMapper();
     }
+    public PlayerServiceImpl(PlayerRepository playerRepository) {
+        this.playerRepository = playerRepository;
+    }
 
     @Override
     public Player create(Playerdto playerdto) {
 
-        Player playerDb = playerRepository.findByName(playerdto.getName());
-        if(playerDb != null){
+        Optional<Player> playerDb = playerRepository.findByName(playerdto.getName());
+        if (!playerDb.isPresent()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Te player with name " + playerdto.getName() + " exists.");
+        } else {
+            Playerdto playerCreate = new Playerdto();
+            playerCreate.setName(playerdto.getName());
+            playerCreate.setRegistDate(Calendar.getInstance());
+            return playerRepository.save(dtoToEntity(playerCreate));
         }
-        playerDb = new Player();
-        playerDb.setName(playerdto.getName());
-        playerDb.setRegistDate(Calendar.getInstance());
-        return playerRepository.save(playerDb);
     }
 
     @Override
@@ -60,6 +66,25 @@ public class PlayerServiceImpl implements IPlayerSevice {
     public void delete(int id) {
 
     }
+
+    /**
+     * This method search for the player into the database
+     * @param name
+     * @return Playerdto
+     * @throws ResponseStatusException
+     */
+    @Override
+    public Playerdto findByName(String name) throws ResponseStatusException {
+        Optional<Player> player = playerRepository.findByName(name);
+        if(player.isPresent()){
+            log.info("player found with name: " + name);
+            return entityToDto(player.get());
+        }else {
+            log.info("No player was found with name: " + name);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No player was found with name: " + name);
+        }
+    }
+
     /**
      * This method transform an entity into a DTO
      * @param player
