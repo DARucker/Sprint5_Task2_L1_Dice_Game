@@ -35,6 +35,7 @@ public class PlayerServiceImpl implements IPlayerSevice {
         if(playerDb != null){
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Te player with name " + playerdto.getName() + " exists.");
         }
+        playerDb = new Player();
         playerDb.setName(playerdto.getName());
         playerDb.setRegistDate(Calendar.getInstance());
         return playerRepository.save(playerDb);
