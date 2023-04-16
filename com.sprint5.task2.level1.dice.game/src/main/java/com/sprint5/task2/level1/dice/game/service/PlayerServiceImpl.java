@@ -43,7 +43,8 @@ public class PlayerServiceImpl implements IPlayerSevice {
             Playerdto playerCreate = new Playerdto();
             playerCreate.setName(playerdto.getName());
             playerCreate.setRegistDate(Calendar.getInstance());
-            return playerRepository.save(dtoToEntity(playerCreate));
+            Player playerGuardar = dtoToEntity(playerCreate);
+            return playerRepository.save(playerGuardar);
         }
     }
 
