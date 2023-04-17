@@ -24,8 +24,8 @@ public class Gamedto {
     private String resultGame;
 
     @Schema(description = "The id of the player")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="playerId")
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name="playerId")
     private Playerdto playerdto;
 
 }

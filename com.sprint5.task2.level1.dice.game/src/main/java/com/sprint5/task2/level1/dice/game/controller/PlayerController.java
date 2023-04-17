@@ -2,6 +2,7 @@ package com.sprint5.task2.level1.dice.game.controller;
 
 import com.sprint5.task2.level1.dice.game.dto.Gamedto;
 import com.sprint5.task2.level1.dice.game.dto.Playerdto;
+import com.sprint5.task2.level1.dice.game.entity.Game;
 import com.sprint5.task2.level1.dice.game.entity.Player;
 import com.sprint5.task2.level1.dice.game.service.IGameService;
 import com.sprint5.task2.level1.dice.game.service.IPlayerSevice;
@@ -22,25 +23,25 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
-@RequiredArgsConstructor
+//@RequiredArgsConstructor
 @RestController
 @RequestMapping("/player")
 @Tag(name = "Spring 5 - Task 2 - Dice Game", description = "")
 public class PlayerController {
 
     private static Logger log = LoggerFactory.getLogger(PlayerController.class);
-   // @Autowired
+    @Autowired
     private IPlayerSevice playerSevice;
-    //@Autowired
+    @Autowired
     private IGameService gameService;
 
-    public PlayerController(IGameService gameService) {
-        this.gameService = gameService;
-    }
+   // public PlayerController(IGameService gameService) {
+   //     this.gameService = gameService;
+   // }
 
-    public PlayerController(IPlayerSevice playerSevice) {
-        this.playerSevice = playerSevice;
-    }
+   // public PlayerController(IPlayerSevice playerSevice) {
+   //     this.playerSevice = playerSevice;
+    //}
 
     /**
      * This class creates a Player
@@ -72,6 +73,7 @@ public class PlayerController {
     @PostMapping("/{id}/games/")
     public ResponseEntity<?> rollDice(@PathVariable int id){
         Playerdto playerPlaying;
+        Gamedto gamedto;
         try {
             playerPlaying = playerSevice.findById(id);
         }catch(ResponseStatusException e){
@@ -80,7 +82,7 @@ public class PlayerController {
             error.put("Reason", e.getReason());
             return new ResponseEntity<Map<String,Object>>(error, HttpStatus.NOT_FOUND);
         }
-        Gamedto gamedto = gameService.playGame(playerPlaying);
+        gamedto = gameService.playGame(playerPlaying);
         return ResponseEntity.ok(gamedto);
     }
 

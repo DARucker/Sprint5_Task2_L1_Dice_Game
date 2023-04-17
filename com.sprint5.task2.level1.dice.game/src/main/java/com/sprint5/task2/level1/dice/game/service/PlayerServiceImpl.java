@@ -37,7 +37,7 @@ public class PlayerServiceImpl implements IPlayerSevice {
     public Player create(Playerdto playerdto) {
 
         Optional<Player> playerDb = playerRepository.findByName(playerdto.getName());
-        if (!playerDb.isPresent()) {
+        if (playerDb.isPresent()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Te player with name " + playerdto.getName() + " exists.");
         } else {
             Playerdto playerCreate = new Playerdto();
