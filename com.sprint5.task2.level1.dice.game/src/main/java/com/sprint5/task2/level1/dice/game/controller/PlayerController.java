@@ -1,29 +1,46 @@
 package com.sprint5.task2.level1.dice.game.controller;
 
+import com.sprint5.task2.level1.dice.game.dto.Gamedto;
 import com.sprint5.task2.level1.dice.game.dto.Playerdto;
+import com.sprint5.task2.level1.dice.game.entity.Player;
+import com.sprint5.task2.level1.dice.game.service.IGameService;
 import com.sprint5.task2.level1.dice.game.service.IPlayerSevice;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
+import java.util.Map;
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/player")
 @Tag(name = "Spring 5 - Task 2 - Dice Game", description = "")
 public class PlayerController {
 
     private static Logger log = LoggerFactory.getLogger(PlayerController.class);
-    @Autowired
+   // @Autowired
     private IPlayerSevice playerSevice;
+    //@Autowired
+    private IGameService gameService;
+
+    public PlayerController(IGameService gameService) {
+        this.gameService = gameService;
+    }
+
+    public PlayerController(IPlayerSevice playerSevice) {
+        this.playerSevice = playerSevice;
+    }
 
     /**
      * This class creates a Player
@@ -34,12 +51,38 @@ public class PlayerController {
     @Operation(summary= "Adds a new Player", description = "Creates a new player and saves it in the database")
     @ApiResponse(responseCode = "201", description = "Player created correctly", content = {@Content(mediaType = "application/json",
         schema = @Schema(implementation = Playerdto.class))})
-    @ApiResponse(responseCode = "500", description = "Internal Server Error while crating the player", content = @Content)
-    public ResponseEntity<Playerdto> createPlayer(@RequestBody Playerdto playerdto){
+    @ApiResponse(responseCode = "403", description = "The player already exists", content = @Content)
+    public ResponseEntity<?> createPlayer(@RequestBody Playerdto playerdto){
 
-        playerSevice.create(playerdto);
-
-        return null;
+        try {
+            playerSevice.create(playerdto);
+            return ResponseEntity.ok(playerdto);
+        }catch (ResponseStatusException e){
+            Map<String, Object> error = new HashMap<>();
+            error.put("Message", e.getMessage());
+            error.put("Reason", e.getReason());
+            return new ResponseEntity<Map<String,Object>>(error, HttpStatus.FORBIDDEN);
+        }
     }
+
+    /**
+     * GAMES
+     * POST /players/{id}/games/ : un jugador/a específico realiza un tirón de los dados.
+     */
+    @PostMapping("/{id}/games/")
+    public ResponseEntity<?> rollDice(@PathVariable int id){
+        Playerdto playerPlaying;
+        try {
+            playerPlaying = playerSevice.findById(id);
+        }catch(ResponseStatusException e){
+            Map<String, Object> error = new HashMap<>();
+            error.put("Message", e.getMessage());
+            error.put("Reason", e.getReason());
+            return new ResponseEntity<Map<String,Object>>(error, HttpStatus.NOT_FOUND);
+        }
+        Gamedto gamedto = gameService.playGame(playerPlaying);
+        return ResponseEntity.ok(gamedto);
+    }
+
 
 }

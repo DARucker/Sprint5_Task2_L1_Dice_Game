@@ -65,23 +65,15 @@ public class PlayerServiceMockTest {
     @Test
     public void whenCreate (){
         Player prueba = new Player();
-        //Playerdto pruebadto = new Playerdto();
         Mockito.when(playerRepository.findByName("Playerdto1")).thenReturn(Optional.of(prueba));
 
-        Player retorno = new Player (1, "Jugador retornado", null, null);
-        Player playerCreate = new Player(1, "create prueba", null, null);
-        Playerdto playerCreatedto = new Playerdto(1, "create", null, null);
-        Player playerGuardar = new Player();
-        Mockito.when(playerRepository.save(playerGuardar)).thenReturn(playerCreate);
-        //
+        Mockito.when(playerRepository.save(player1)).thenReturn(player1);
 
-        Player expected = playerService.create(playerdto1);
+        Player expected = playerService.create(playerService.entityToDto(player1));
+
         assertThat(expected).isNotNull();
         assertThat(expected.getName()).isEqualTo("Player1");
-
     }
-
-
 
 
     @DisplayName("Testing method dto To Entity")

@@ -43,14 +43,23 @@ public class PlayerServiceImpl implements IPlayerSevice {
             Playerdto playerCreate = new Playerdto();
             playerCreate.setName(playerdto.getName());
             playerCreate.setRegistDate(Calendar.getInstance());
-            Player playerGuardar = dtoToEntity(playerCreate);
-            return playerRepository.save(playerGuardar);
+            return playerRepository.save(dtoToEntity(playerCreate));
+            //Player saved = playerRepository.save(dtoToEntity(playerCreate));
+            //log.info("saved " + saved);
+            //return saved;
         }
     }
 
     @Override
     public Playerdto findById(int id) {
-        return null;
+        Optional<Player> player = playerRepository.findById(id);
+        if(player.isPresent()){
+            log.info("player found with id: " + id);
+            return entityToDto(player.get());
+        }else {
+            log.info("No player was found with id: " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No player was found with id: " + id);
+        }
     }
 
     @Override
