@@ -5,6 +5,8 @@ import com.sprint5.task2.level1.dice.game.dto.Playerdto;
 import com.sprint5.task2.level1.dice.game.entity.Game;
 import com.sprint5.task2.level1.dice.game.entity.Player;
 
+import java.util.List;
+
 public interface IGameService  {
 
     int rollDice();
@@ -14,4 +16,5 @@ public interface IGameService  {
     Game dtoToEntity(Gamedto gamedto);
 
 
+    List<Gamedto> findAllByPlayerId(int playerId);
 }

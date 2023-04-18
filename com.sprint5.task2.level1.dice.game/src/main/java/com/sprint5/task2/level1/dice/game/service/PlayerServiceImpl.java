@@ -1,5 +1,6 @@
 package com.sprint5.task2.level1.dice.game.service;
 
+import com.sprint5.task2.level1.dice.game.dto.Gamedto;
 import com.sprint5.task2.level1.dice.game.dto.Playerdto;
 import com.sprint5.task2.level1.dice.game.entity.Player;
 import com.sprint5.task2.level1.dice.game.repository.PlayerRepository;
@@ -35,20 +36,19 @@ public class PlayerServiceImpl implements IPlayerSevice {
 
     @Override
     public Player create(Playerdto playerdto) {
-
-        Optional<Player> playerDb = playerRepository.findByName(playerdto.getName());
-        if (playerDb.isPresent()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Te player with name " + playerdto.getName() + " exists.");
-        } else {
+            if(!playerdto.getName().equals("")) {
+                Optional<Player> playerDb = playerRepository.findByName(playerdto.getName());
+                if (playerDb.isPresent()) {
+                    throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Te player with name " + playerdto.getName() + " exists.");
+                }
+            }
             Playerdto playerCreate = new Playerdto();
             playerCreate.setName(playerdto.getName());
             playerCreate.setRegistDate(Calendar.getInstance());
             return playerRepository.save(dtoToEntity(playerCreate));
-            //Player saved = playerRepository.save(dtoToEntity(playerCreate));
-            //log.info("saved " + saved);
-            //return saved;
-        }
+
     }
+
 
     @Override
     public Playerdto findById(int id) {

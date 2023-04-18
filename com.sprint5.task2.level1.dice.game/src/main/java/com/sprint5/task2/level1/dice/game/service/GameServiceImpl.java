@@ -11,7 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class GameServiceImpl implements IGameService {
@@ -43,18 +48,10 @@ public class GameServiceImpl implements IGameService {
             gamedto.setResultGame("Loose");
         }
         Game savedGame = new Game();
-        Player savedPlayer = new Player();
-        //savedPlayer.setId(playerdto.getId());
-        //savedPlayer.setName(playerdto.getName());
-        //savedGame.setId(gamedto.getId());
-        //savedGame.setPlayer(savedPlayer);
-        //savedGame.setPoints(gamedto.getPoints());
-        //savedGame.setResultGame(gamedto.getResultGame());
         savedGame = saveGame(gamedto);
         Gamedto savedGamedto = entityToDto(savedGame);
-        //savedGamedto.setPlayerdto(playerdto);
         return savedGamedto;
-        //return entityToDto(saveGame(gamedto));
+
     }
 
     @Override
@@ -63,10 +60,27 @@ public class GameServiceImpl implements IGameService {
         saved.setPlayer(playerService.dtoToEntity(gamedto.getPlayerdto()));
         gameRepository.save(saved);
         return saved;
-        //return gameRepository.save(dtoToEntity(gamedto));
     }
 
-
+    /**
+     * findAllByPlayerId
+     * @param playerId
+     * @return
+     */
+    @Override
+    public List<Gamedto> findAllByPlayerId(int playerId) {
+        List<Game> gamesByPlayerId = gameRepository.findAllByPlayerId(playerId);
+        if(gamesByPlayerId.isEmpty()){
+            log.info("There are no games por player with id: " + playerId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No player was found with id: " + playerId);
+        }
+        List<Gamedto> gamedtosByPlayerId = new ArrayList<>();
+        for(Game g : gamesByPlayerId){
+            Gamedto gamedto = entityToDto(g);
+            gamedtosByPlayerId.add(gamedto);
+        }
+        return gamedtosByPlayerId;
+    }
 
     /**
      * Roll dice and calculates if the player wins or looses this roll

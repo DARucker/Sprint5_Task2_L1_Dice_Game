@@ -22,12 +22,13 @@ public class Player {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private String name;
-    @OneToMany(mappedBy="player")
-    private List<Game> games;
+
     @Column(name = "registry_date")
     @Temporal(TemporalType.DATE)
     private Calendar registDate;
 
+    @OneToMany(mappedBy="player", cascade = CascadeType.ALL)
+    private List<Game> games;
 
     public Player(int id, String name){
         this.id = id;

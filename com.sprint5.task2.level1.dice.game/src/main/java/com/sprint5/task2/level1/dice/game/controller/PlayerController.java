@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 //@RequiredArgsConstructor
 @RestController
 @RequestMapping("/player")
@@ -70,6 +71,10 @@ public class PlayerController {
      * GAMES
      * POST /players/{id}/games/ : un jugador/a específico realiza un tirón de los dados.
      */
+    @Operation(summary= "Roll dices", description = "If dice 1 + dice 2 = 7, then the player wins. The result is saved in the database")
+    @ApiResponse(responseCode = "200", description = "Game added to the database", content = {@Content(mediaType = "application/json",
+            schema = @Schema(implementation = Gamedto.class))})
+    @ApiResponse(responseCode = "404", description = "Player not found", content = @Content)
     @PostMapping("/{id}/games/")
     public ResponseEntity<?> rollDice(@PathVariable int id){
         Playerdto playerPlaying;
@@ -86,5 +91,24 @@ public class PlayerController {
         return ResponseEntity.ok(gamedto);
     }
 
+    /**
+     * GET /players/{id}/games: devuelve el listado de jugadas por un jugador/a.
+     * @param id
+     * @return
+     */
+    @GetMapping("/{id}/games/")
+    public ResponseEntity<?> findAllGames(@PathVariable int id) {
+        List<Gamedto> gamedtos;
+        try {
+            gamedtos = gameService.findAllByPlayerId(id);
+        } catch (ResponseStatusException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("Message", e.getMessage());
+            error.put("Reason", e.getReason());
+            return new ResponseEntity<Map<String, Object>>(error, HttpStatus.NOT_FOUND);
+        }
+
+        return ResponseEntity.ok(gamedtos);
+    }
 
 }
