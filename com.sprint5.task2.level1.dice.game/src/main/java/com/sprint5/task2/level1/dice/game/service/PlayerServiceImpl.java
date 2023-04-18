@@ -46,9 +46,7 @@ public class PlayerServiceImpl implements IPlayerSevice {
             playerCreate.setName(playerdto.getName());
             playerCreate.setRegistDate(Calendar.getInstance());
             return playerRepository.save(dtoToEntity(playerCreate));
-
     }
-
 
     @Override
     public Playerdto findById(int id) {
@@ -67,9 +65,26 @@ public class PlayerServiceImpl implements IPlayerSevice {
         return null;
     }
 
+    /**
+     * This method updates the name of the player
+     * @param playerdto
+     * @return playerdto
+     */
     @Override
     public Playerdto update(Playerdto playerdto) {
-        return null;
+            log.info("update player: " + playerdto);
+            Optional<Player> playerDb = playerRepository.findById(playerdto.getId());
+            if (!playerDb.isPresent()) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can´t find player with id " + playerdto.getId());
+            }
+            Optional<Player> playerDb1 = playerRepository.findByName(playerdto.getName());
+            if (!playerDb1.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The name " + playerdto.getName() + " is in use");
+            }
+            Player playerUpdate = playerDb.get();
+            playerUpdate.setName(playerdto.getName());
+            playerUpdate = playerRepository.save(playerUpdate);
+            return entityToDto(playerUpdate);
     }
 
     @Override

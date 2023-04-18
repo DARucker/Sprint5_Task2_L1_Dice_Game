@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class GameServiceImpl implements IGameService {
@@ -75,10 +76,13 @@ public class GameServiceImpl implements IGameService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No player was found with id: " + playerId);
         }
         List<Gamedto> gamedtosByPlayerId = new ArrayList<>();
-        for(Game g : gamesByPlayerId){
-            Gamedto gamedto = entityToDto(g);
-            gamedtosByPlayerId.add(gamedto);
-        }
+        gamedtosByPlayerId = gamesByPlayerId.stream()
+                .map(this::entityToDto)
+                .collect(Collectors.toList());
+//        for(Game g : gamesByPlayerId){
+//            Gamedto gamedto = entityToDto(g);
+//            gamedtosByPlayerId.add(gamedto);
+//        }
         return gamedtosByPlayerId;
     }
 

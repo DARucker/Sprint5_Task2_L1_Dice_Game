@@ -36,16 +36,8 @@ public class PlayerController {
     @Autowired
     private IGameService gameService;
 
-   // public PlayerController(IGameService gameService) {
-   //     this.gameService = gameService;
-   // }
-
-   // public PlayerController(IPlayerSevice playerSevice) {
-   //     this.playerSevice = playerSevice;
-    //}
-
     /**
-     * This class creates a Player
+     * This method creates a Player
      * @param playerdto
      * @return ResponseEntity<Playerdto>
      */
@@ -55,7 +47,7 @@ public class PlayerController {
         schema = @Schema(implementation = Playerdto.class))})
     @ApiResponse(responseCode = "403", description = "The player already exists", content = @Content)
     public ResponseEntity<?> createPlayer(@RequestBody Playerdto playerdto){
-
+        log.info("create player: " + playerdto);
         try {
             playerSevice.create(playerdto);
             return ResponseEntity.ok(playerdto);
@@ -65,6 +57,26 @@ public class PlayerController {
             error.put("Reason", e.getReason());
             return new ResponseEntity<Map<String,Object>>(error, HttpStatus.FORBIDDEN);
         }
+    }
+
+
+    /**
+     * PUT /players: modifica el nombre del jugador/a.
+     */
+
+    @PutMapping(value="/update/")
+    public ResponseEntity<?> updatePlayer(@RequestBody Playerdto playerdto){
+        log.info("update player: " + playerdto);
+        try {
+            playerSevice.update(playerdto);
+            return ResponseEntity.ok(playerdto);
+        }catch (ResponseStatusException e){
+            Map<String, Object> error = new HashMap<>();
+            error.put("Message", e.getMessage());
+            error.put("Reason", e.getReason());
+            return new ResponseEntity<Map<String,Object>>(error, HttpStatus.NOT_FOUND);
+        }
+
     }
 
     /**
@@ -96,6 +108,11 @@ public class PlayerController {
      * @param id
      * @return
      */
+    @Operation(summary= "Lista todas las jugadas de un jugador", description = "Retorna el listado de jugadas hechas por un jugador")
+    @ApiResponse(responseCode = "2XX", description = "Listado de jugadas", content = {@Content(mediaType = "application/json",
+            schema = @Schema(implementation = Gamedto.class))})
+    @ApiResponse(responseCode = "404", description = "Player not found", content = @Content)
+
     @GetMapping("/{id}/games/")
     public ResponseEntity<?> findAllGames(@PathVariable int id) {
         List<Gamedto> gamedtos;
@@ -107,7 +124,6 @@ public class PlayerController {
             error.put("Reason", e.getReason());
             return new ResponseEntity<Map<String, Object>>(error, HttpStatus.NOT_FOUND);
         }
-
         return ResponseEntity.ok(gamedtos);
     }
 
