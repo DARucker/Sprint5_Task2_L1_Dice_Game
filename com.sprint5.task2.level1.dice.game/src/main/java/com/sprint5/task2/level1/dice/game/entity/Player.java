@@ -11,7 +11,7 @@ import java.util.Calendar;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
+//@AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
@@ -27,17 +27,17 @@ public class Player {
     @Temporal(TemporalType.DATE)
     private Calendar registDate;
 
-    @OneToMany(mappedBy="player", cascade = CascadeType.ALL)
-    private List<Game> games;
+  //  @OneToMany(mappedBy="player", cascade = CascadeType.ALL)
+   // private List<Game> games;
 
     public Player(int id, String name){
         this.id = id;
         this.name = name;
     }
 
-    public Player(List<Game> games) {
-        this.games = games;
-    }
+    //public Player(List<Game> games) {
+    //    this.games = games;
+    //}
 
     public Player(int id, String name, Calendar registDate) {
         this.id = id;

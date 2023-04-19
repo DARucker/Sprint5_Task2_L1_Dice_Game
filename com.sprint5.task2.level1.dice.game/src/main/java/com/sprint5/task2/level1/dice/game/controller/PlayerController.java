@@ -63,7 +63,10 @@ public class PlayerController {
     /**
      * PUT /players: modifica el nombre del jugador/a.
      */
-
+    @Operation(summary= "Update Player", description = "Updates the name of an existing player")
+    @ApiResponse(responseCode = "201", description = "Player updated correctly", content = {@Content(mediaType = "application/json",
+            schema = @Schema(implementation = Playerdto.class))})
+    @ApiResponse(responseCode = "404", description = "Player not found", content = @Content)
     @PutMapping(value="/update/")
     public ResponseEntity<?> updatePlayer(@RequestBody Playerdto playerdto){
         log.info("update player: " + playerdto);
@@ -112,7 +115,6 @@ public class PlayerController {
     @ApiResponse(responseCode = "2XX", description = "Listado de jugadas", content = {@Content(mediaType = "application/json",
             schema = @Schema(implementation = Gamedto.class))})
     @ApiResponse(responseCode = "404", description = "Player not found", content = @Content)
-
     @GetMapping("/{id}/games/")
     public ResponseEntity<?> findAllGames(@PathVariable int id) {
         List<Gamedto> gamedtos;
@@ -125,6 +127,23 @@ public class PlayerController {
             return new ResponseEntity<Map<String, Object>>(error, HttpStatus.NOT_FOUND);
         }
         return ResponseEntity.ok(gamedtos);
+    }
+
+    /**
+     * **  GET /players/: devuelve el listado de todos los jugadores/as del sistema
+     * con su porcentaje medio de éxitos.
+     */
+
+    @Operation(summary= "Listado del resultado de todos los jugadores", description = "Retorna el resumen de las jugadas de cada jugador con sus partidas ganadas y el succes rate")
+    @ApiResponse(responseCode = "2XX", description = "Listado de jugadas", content = {@Content(mediaType = "application/json",
+            schema = @Schema(implementation = Gamedto.class))})
+    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
+    @GetMapping("/players/")
+    public ResponseEntity<?> findAllRanking() {
+
+        return ResponseEntity.ok(gameService.listAllRanking());
+
+
     }
 
 }

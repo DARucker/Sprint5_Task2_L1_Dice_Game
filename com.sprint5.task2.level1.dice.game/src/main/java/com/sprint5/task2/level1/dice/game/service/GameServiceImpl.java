@@ -2,6 +2,7 @@ package com.sprint5.task2.level1.dice.game.service;
 
 import com.sprint5.task2.level1.dice.game.dto.Gamedto;
 import com.sprint5.task2.level1.dice.game.dto.Playerdto;
+import com.sprint5.task2.level1.dice.game.dto.Ranking;
 import com.sprint5.task2.level1.dice.game.entity.Game;
 import com.sprint5.task2.level1.dice.game.entity.Player;
 import com.sprint5.task2.level1.dice.game.repository.GameRepository;
@@ -79,12 +80,49 @@ public class GameServiceImpl implements IGameService {
         gamedtosByPlayerId = gamesByPlayerId.stream()
                 .map(this::entityToDto)
                 .collect(Collectors.toList());
-//        for(Game g : gamesByPlayerId){
-//            Gamedto gamedto = entityToDto(g);
-//            gamedtosByPlayerId.add(gamedto);
-//        }
         return gamedtosByPlayerId;
     }
+
+    /**
+     * **  GET /players/: devuelve el listado de todos los jugadores/as
+     * del sistema con su porcentaje medio de éxitos.
+     */
+
+    public List<Ranking> listAllRanking(){
+        List<Ranking> allRanking = new ArrayList<>();
+        List<Game> gamesPlayed = gameRepository.findAll();
+        List<Player> playerList = playerService.findAll();
+        for (Player player : playerList){
+            int id = player.getId();
+            Long win = gamesPlayed.stream().filter(x -> x.getPlayer().getId() == id && x.getResultGame().equals("Win")).count();
+            Long played = gamesPlayed.stream().filter(x -> x.getPlayer().getId()==id).count();
+            double calcularRatio = 0;
+            if(win>0){calcularRatio =  (double) win /played*100;}
+            int ratio = (int) calcularRatio;
+            Ranking ranking = new Ranking(0, id,win, played, ratio);
+            allRanking.add(ranking);
+            log.info("ranking "+ ranking);
+        }
+        return allRanking;
+    }
+
+    /**
+     * GET /players/ranking: devuelve el ranking medio de todos los jugadores/as del sistema. Es decir, el porcentaje medio de logros.
+     */
+
+    public int rankingAvg(){
+        List<Game> gamesPlayed = gameRepository.findAll();
+        List<Player> playerList = playerService.findAll();
+
+        int gamesWon = (int) gamesPlayed.stream().filter(x -> x.getResultGame().equals("Win")).count();
+        double calcularRatio = 0;
+        if(gamesWon>0){
+            calcularRatio =  (double) gamesWon /gamesPlayed.size()*100;
+        }
+        return (int) calcularRatio;
+    }
+
+
 
     /**
      * Roll dice and calculates if the player wins or looses this roll

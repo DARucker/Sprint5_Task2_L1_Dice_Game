@@ -10,7 +10,7 @@ public interface IPlayerSevice {
 
     Player create(Playerdto playerdto);
     Playerdto findById(int id);
-    List<Playerdto> findAll();
+    List<Player> findAll();
     Playerdto update(Playerdto playerdto);
     void delete (int id);
 

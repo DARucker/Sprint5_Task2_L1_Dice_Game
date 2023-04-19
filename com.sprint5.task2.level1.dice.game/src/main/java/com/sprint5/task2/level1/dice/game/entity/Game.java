@@ -16,7 +16,7 @@ public class Game {
     private int points;
     private String resultGame;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="playerId")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    //@JoinColumn(name="playerId")
     private Player player;
 }

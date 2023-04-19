@@ -61,8 +61,9 @@ public class PlayerServiceImpl implements IPlayerSevice {
     }
 
     @Override
-    public List<Playerdto> findAll() {
-        return null;
+    public List<Player> findAll() {
+
+        return playerRepository.findAll();
     }
 
     /**
@@ -78,7 +79,7 @@ public class PlayerServiceImpl implements IPlayerSevice {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Can´t find player with id " + playerdto.getId());
             }
             Optional<Player> playerDb1 = playerRepository.findByName(playerdto.getName());
-            if (!playerDb1.isPresent()) {
+            if (!playerDb.isPresent()) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The name " + playerdto.getName() + " is in use");
             }
             Player playerUpdate = playerDb.get();

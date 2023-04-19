@@ -24,7 +24,7 @@ public class Gamedto {
     private String resultGame;
 
     @Schema(description = "The id of the player")
-    //@ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     //@JoinColumn(name="playerId")
     private Playerdto playerdto;
 
