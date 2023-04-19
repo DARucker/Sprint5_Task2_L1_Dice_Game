@@ -2,8 +2,10 @@ package com.sprint5.task2.level1.dice.game.controller;
 
 import com.sprint5.task2.level1.dice.game.dto.Gamedto;
 import com.sprint5.task2.level1.dice.game.dto.Playerdto;
+import com.sprint5.task2.level1.dice.game.dto.Ranking;
 import com.sprint5.task2.level1.dice.game.entity.Game;
 import com.sprint5.task2.level1.dice.game.entity.Player;
+import com.sprint5.task2.level1.dice.game.service.GameServiceImpl;
 import com.sprint5.task2.level1.dice.game.service.IGameService;
 import com.sprint5.task2.level1.dice.game.service.IPlayerSevice;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,7 +45,7 @@ public class PlayerController {
      */
     @PostMapping(value="/add")
     @Operation(summary= "Adds a new Player", description = "Creates a new player and saves it in the database")
-    @ApiResponse(responseCode = "201", description = "Player created correctly", content = {@Content(mediaType = "application/json",
+    @ApiResponse(responseCode = "200", description = "Player created correctly", content = {@Content(mediaType = "application/json",
         schema = @Schema(implementation = Playerdto.class))})
     @ApiResponse(responseCode = "403", description = "The player already exists", content = @Content)
     public ResponseEntity<?> createPlayer(@RequestBody Playerdto playerdto){
@@ -58,7 +60,6 @@ public class PlayerController {
             return new ResponseEntity<Map<String,Object>>(error, HttpStatus.FORBIDDEN);
         }
     }
-
 
     /**
      * PUT /players: modifica el nombre del jugador/a.
@@ -79,7 +80,6 @@ public class PlayerController {
             error.put("Reason", e.getReason());
             return new ResponseEntity<Map<String,Object>>(error, HttpStatus.NOT_FOUND);
         }
-
     }
 
     /**
@@ -107,12 +107,28 @@ public class PlayerController {
     }
 
     /**
+     * DELETE /players/{id}/games: elimina las tiradas del jugador/a.
+     */
+    @Operation(summary= "Delete selected games", description = "deletes all games of selected player.")
+    @ApiResponse(responseCode = "200", description = "Games deleted", content = @Content)
+    @ApiResponse(responseCode = "404", description = "Player not found", content = @Content)
+    @DeleteMapping("/{id}/games/")
+    public void deleteGamesByPlayerId(@PathVariable int id){
+        try {
+            gameService.deleteGamesByPlayerId(id);
+        }catch(ResponseStatusException e){
+            Map<String, Object> error = new HashMap<>();
+            error.put("Message", e.getMessage());
+            error.put("Reason", e.getReason());
+        }
+    }
+    /**
      * GET /players/{id}/games: devuelve el listado de jugadas por un jugador/a.
      * @param id
      * @return
      */
     @Operation(summary= "Lista todas las jugadas de un jugador", description = "Retorna el listado de jugadas hechas por un jugador")
-    @ApiResponse(responseCode = "2XX", description = "Listado de jugadas", content = {@Content(mediaType = "application/json",
+    @ApiResponse(responseCode = "200", description = "Listado de jugadas", content = {@Content(mediaType = "application/json",
             schema = @Schema(implementation = Gamedto.class))})
     @ApiResponse(responseCode = "404", description = "Player not found", content = @Content)
     @GetMapping("/{id}/games/")
@@ -135,15 +151,50 @@ public class PlayerController {
      */
 
     @Operation(summary= "Listado del resultado de todos los jugadores", description = "Retorna el resumen de las jugadas de cada jugador con sus partidas ganadas y el succes rate")
-    @ApiResponse(responseCode = "2XX", description = "Listado de jugadas", content = {@Content(mediaType = "application/json",
-            schema = @Schema(implementation = Gamedto.class))})
+    @ApiResponse(responseCode = "200", description = "Listado de jugadas", content = {@Content(mediaType = "application/json",
+            schema = @Schema(implementation = Ranking.class))})
     @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
     @GetMapping("/players/")
     public ResponseEntity<?> findAllRanking() {
-
         return ResponseEntity.ok(gameService.listAllRanking());
-
-
     }
+    /**
+    * GET /players/ranking: devuelve el ranking medio de todos los jugadores/as del sistema. Es decir, el porcentaje medio de logros.
+    */
+    @Operation(summary= "Average of players rankings", description = "Returns the average success rate of all players")
+    @ApiResponse(responseCode = "200", description = "Average", content = @Content)
+    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
+    @GetMapping("/players/ranking")
+    public ResponseEntity<Integer> rankgingAvg(){
+        return ResponseEntity.ok(gameService.rankingAvg());
+    }
+
+    /**
+     *  GET /players/ranking/loser: devuelve al jugador/a con peor porcentaje de éxito.
+     */
+    @Operation(summary= "Player with the worst ranking", description = "Returns the player with the lowest success rate")
+    @ApiResponse(responseCode = "200", description = "Player id and games results", content = {@Content(mediaType = "application/json",
+            schema = @Schema(implementation = Ranking.class))})
+    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
+    @GetMapping("/players/ranking/looser")
+    public ResponseEntity<Ranking> worstPlayer(){
+        return ResponseEntity.ok((Ranking) gameService.worstPlayer());
+    }
+    /**
+     * GET /players/ranking/winenr: devuelve al jugador/a con peor porcentaje de éxito.
+     */
+    @Operation(summary= "Player with the best ranking", description = "Returns the player with the highest success rate")
+    @ApiResponse(responseCode = "200", description = "Player id and games results", content = {@Content(mediaType = "application/json",
+            schema = @Schema(implementation = Ranking.class))})
+    @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
+    @GetMapping("/players/ranking/winner")
+    public ResponseEntity<Ranking> bestPlayer(){
+        return ResponseEntity.ok((Ranking) gameService.bestPlayer());
+    }
+    /**
+     * DELETE /players/{id}/games: elimina las tiradas del jugador/a.
+     */
+
+
 
 }

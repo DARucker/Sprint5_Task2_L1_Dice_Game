@@ -13,8 +13,13 @@ public interface IGameService  {
     int rollDice();
     Gamedto playGame(Playerdto playerdto);
     Game saveGame(Gamedto gamedto);
+    void deleteGamesByPlayerId(int id);
     Gamedto entityToDto(Game game);
     Game dtoToEntity(Gamedto gamedto);
     List<Gamedto> findAllByPlayerId(int playerId);
     List<Ranking> listAllRanking();
-}
+    public int rankingAvg();
+    public List<Ranking> worstPlayer();
+    public List<Ranking> bestPlayer();
+
+    }

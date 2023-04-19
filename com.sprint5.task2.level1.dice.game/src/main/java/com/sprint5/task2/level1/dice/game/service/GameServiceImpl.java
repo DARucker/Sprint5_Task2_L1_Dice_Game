@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,6 +64,21 @@ public class GameServiceImpl implements IGameService {
         gameRepository.save(saved);
         return saved;
     }
+
+    /**
+     * DELETE /players/{id}/games: elimina las tiradas del jugador/a.
+     */
+
+    public void deleteGamesByPlayerId(int id){
+
+     if(findAllByPlayerId(id).isEmpty()){
+        log.error("error deleting list of games for player " + id);
+         throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No games were found for player: " + id);
+     }
+        gameRepository.deleteByPlayerId(id);
+    }
+
+
 
     /**
      * findAllByPlayerId
@@ -121,8 +137,27 @@ public class GameServiceImpl implements IGameService {
         }
         return (int) calcularRatio;
     }
+    /**
+     *     GET /players/ranking/loser: devuelve al jugador/a con peor porcentaje de éxito.
+     */
+    public List<Ranking> worstPlayer(){
+        return listAllRanking().stream()
+                .sorted(Comparator.comparingInt(Ranking::getRatio).reversed())
+                .limit(1)
+                .collect(Collectors.toList());
+        }
 
+    /**
+     *     GET /players/ranking/winer: devuelve al jugador/a con peor porcentaje de éxito.
+     */
+    public List<Ranking> bestPlayer(){
+        List<Ranking> allRanking = listAllRanking();
 
+         return allRanking.stream()
+                .sorted(Comparator.comparingInt(Ranking::getRatio))
+                .limit(1)
+                .collect(Collectors.toList());
+    }
 
     /**
      * Roll dice and calculates if the player wins or looses this roll
