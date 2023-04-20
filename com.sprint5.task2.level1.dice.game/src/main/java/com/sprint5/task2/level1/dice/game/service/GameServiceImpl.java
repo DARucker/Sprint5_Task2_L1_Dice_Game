@@ -65,7 +65,7 @@ public class GameServiceImpl implements IGameService {
         return saved;
     }
 
-    /**
+    /*
      * DELETE /players/{id}/games: elimina las tiradas del jugador/a.
      */
 
@@ -83,7 +83,7 @@ public class GameServiceImpl implements IGameService {
     /**
      * findAllByPlayerId
      * @param playerId
-     * @return
+     * @return List<Gamedto>
      */
     @Override
     public List<Gamedto> findAllByPlayerId(int playerId) {
@@ -110,12 +110,16 @@ public class GameServiceImpl implements IGameService {
         List<Player> playerList = playerService.findAll();
         for (Player player : playerList){
             int id = player.getId();
+            String name = player.getName();
+            if(name.equals("")){
+                name="Anonymous";
+            }
             Long win = gamesPlayed.stream().filter(x -> x.getPlayer().getId() == id && x.getResultGame().equals("Win")).count();
             Long played = gamesPlayed.stream().filter(x -> x.getPlayer().getId()==id).count();
             double calcularRatio = 0;
             if(win>0){calcularRatio =  (double) win /played*100;}
             int ratio = (int) calcularRatio;
-            Ranking ranking = new Ranking(0, id,win, played, ratio);
+            Ranking ranking = new Ranking(0, id,name, win, played, ratio);
             allRanking.add(ranking);
             log.info("ranking "+ ranking);
         }
@@ -140,23 +144,31 @@ public class GameServiceImpl implements IGameService {
     /**
      *     GET /players/ranking/loser: devuelve al jugador/a con peor porcentaje de éxito.
      */
-    public List<Ranking> worstPlayer(){
-        return listAllRanking().stream()
-                .sorted(Comparator.comparingInt(Ranking::getRatio).reversed())
-                .limit(1)
-                .collect(Collectors.toList());
-        }
-
-    /**
-     *     GET /players/ranking/winer: devuelve al jugador/a con peor porcentaje de éxito.
-     */
-    public List<Ranking> bestPlayer(){
-        List<Ranking> allRanking = listAllRanking();
-
-         return allRanking.stream()
+    public Ranking worstPlayer(){
+        List<Ranking> worstRankings = listAllRanking().stream()
+                .filter(x -> x.getPlayed()>0)
                 .sorted(Comparator.comparingInt(Ranking::getRatio))
                 .limit(1)
                 .collect(Collectors.toList());
+        if(worstRankings.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No games were stored");
+        }
+        return worstRankings.get(0);
+    }
+
+    /**
+     *     GET /players/ranking/winer: devuelve al jugador/a con mejor porcentaje de éxito.
+     */
+    public Ranking bestPlayer(){
+        List<Ranking> bestRankings = listAllRanking()
+                .stream()
+                .sorted(Comparator.comparingInt(Ranking::getRatio).reversed())
+                .limit(1)
+                .collect(Collectors.toList());
+        if(bestRankings.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "No games were stored");
+        }
+        return bestRankings.get(0);
     }
 
     /**

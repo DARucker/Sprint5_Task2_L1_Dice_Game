@@ -19,7 +19,7 @@ public interface IGameService  {
     List<Gamedto> findAllByPlayerId(int playerId);
     List<Ranking> listAllRanking();
     public int rankingAvg();
-    public List<Ranking> worstPlayer();
-    public List<Ranking> bestPlayer();
+    public Ranking worstPlayer();
+    public Ranking bestPlayer();
 
     }

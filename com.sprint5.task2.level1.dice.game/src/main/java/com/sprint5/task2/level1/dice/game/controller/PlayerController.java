@@ -127,8 +127,8 @@ public class PlayerController {
      * @param id
      * @return
      */
-    @Operation(summary= "Lista todas las jugadas de un jugador", description = "Retorna el listado de jugadas hechas por un jugador")
-    @ApiResponse(responseCode = "200", description = "Listado de jugadas", content = {@Content(mediaType = "application/json",
+    @Operation(summary= "List all dice rolls for a player", description = "Returns the complete list of each player and the result of their dice rolls.")
+    @ApiResponse(responseCode = "200", description = "List of rolls", content = {@Content(mediaType = "application/json",
             schema = @Schema(implementation = Gamedto.class))})
     @ApiResponse(responseCode = "404", description = "Player not found", content = @Content)
     @GetMapping("/{id}/games/")
@@ -146,12 +146,13 @@ public class PlayerController {
     }
 
     /**
-     * **  GET /players/: devuelve el listado de todos los jugadores/as del sistema
-     * con su porcentaje medio de éxitos.
+     * **  GET /players/: returns the list of all the players in the system
+     *   with its average percentage of successes..
      */
 
-    @Operation(summary= "Listado del resultado de todos los jugadores", description = "Retorna el resumen de las jugadas de cada jugador con sus partidas ganadas y el succes rate")
-    @ApiResponse(responseCode = "200", description = "Listado de jugadas", content = {@Content(mediaType = "application/json",
+    @Operation(summary= "List of results of all players", description = "returns the list of all the players in the system\n" +
+            "  with its average success rate.")
+    @ApiResponse(responseCode = "200", description = "List of results of all players", content = {@Content(mediaType = "application/json",
             schema = @Schema(implementation = Ranking.class))})
     @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
     @GetMapping("/players/")
@@ -170,30 +171,54 @@ public class PlayerController {
     }
 
     /**
-     *  GET /players/ranking/loser: devuelve al jugador/a con peor porcentaje de éxito.
+     *  GET /players/ranking/loser: Returns the player with the lowest success rate.
      */
     @Operation(summary= "Player with the worst ranking", description = "Returns the player with the lowest success rate")
     @ApiResponse(responseCode = "200", description = "Player id and games results", content = {@Content(mediaType = "application/json",
             schema = @Schema(implementation = Ranking.class))})
+    @ApiResponse(responseCode = "204", description = "No content. There are no games saved in the database", content = @Content)
     @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
-    @GetMapping("/players/ranking/looser")
-    public ResponseEntity<Ranking> worstPlayer(){
-        return ResponseEntity.ok((Ranking) gameService.worstPlayer());
+    @GetMapping("/ranking/looser")
+    public ResponseEntity<?> worstPlayer(){
+        Ranking worstPlayer;
+        try {
+            worstPlayer = gameService.worstPlayer();
+        } catch (ResponseStatusException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("Message", e.getMessage());
+            error.put("Reason", e.getReason());
+            return new ResponseEntity<Map<String, Object>>(error, e.getStatusCode());
+        }
+        return ResponseEntity.ok(worstPlayer);
     }
     /**
-     * GET /players/ranking/winenr: devuelve al jugador/a con peor porcentaje de éxito.
+     * GET /players/ranking/winenr: Returns the player with the lowest success rate.
      */
     @Operation(summary= "Player with the best ranking", description = "Returns the player with the highest success rate")
     @ApiResponse(responseCode = "200", description = "Player id and games results", content = {@Content(mediaType = "application/json",
             schema = @Schema(implementation = Ranking.class))})
+    @ApiResponse(responseCode = "204", description = "No content. There are no games saved in the database", content = @Content)
     @ApiResponse(responseCode = "500", description = "Server error", content = @Content)
-    @GetMapping("/players/ranking/winner")
-    public ResponseEntity<Ranking> bestPlayer(){
-        return ResponseEntity.ok((Ranking) gameService.bestPlayer());
-    }
-    /**
-     * DELETE /players/{id}/games: elimina las tiradas del jugador/a.
-     */
+    @GetMapping("ranking/winner")
+    public ResponseEntity<?> bestPlayer(){
+            Ranking bestPlayer;
+            try {
+                bestPlayer = gameService.bestPlayer();
+            } catch (ResponseStatusException e) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("Message", e.getMessage());
+                error.put("Reason", e.getReason());
+                return new ResponseEntity<Map<String, Object>>(error, e.getStatusCode());
+            }
+            return ResponseEntity.ok(bestPlayer);
+        }
+
+
+
+
+
+
+
 
 
 

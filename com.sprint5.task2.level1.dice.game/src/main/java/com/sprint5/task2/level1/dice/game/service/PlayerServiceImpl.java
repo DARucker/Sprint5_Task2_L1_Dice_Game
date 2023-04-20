@@ -119,6 +119,9 @@ public class PlayerServiceImpl implements IPlayerSevice {
     @Override
     public Playerdto entityToDto(Player player) {
         Playerdto playerdto = modelMapper().map(player, Playerdto.class);
+        if(playerdto.getName().equals("")){
+            playerdto.setName("Anonymous");
+        }
         return playerdto;
     }
     /**

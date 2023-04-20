@@ -37,6 +37,11 @@ GET /players/ranking: returns the average ranking of all players in the system. 
 GET /players/ranking/loser: returns the player with the worst success rate.
 GET /players/ranking/winner: Returns the player with the worst success rate.
 
+ - Swagger:
+
+   http://localhost:8080/swagger-ui/index.html#/
+
+
 - Phase 1
 Persistence: uses MySQL as database.
 - Phase 2
