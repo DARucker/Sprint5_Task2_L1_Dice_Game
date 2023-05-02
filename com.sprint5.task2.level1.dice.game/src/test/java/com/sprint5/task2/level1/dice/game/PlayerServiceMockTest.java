@@ -14,6 +14,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -27,8 +29,6 @@ public class PlayerServiceMockTest {
     private IPlayerSevice playerService;
     private Player player1;
     private Playerdto playerdto1;
-    //@Autowired
-    //private PlayerServiceImpl playerService;
 
     @BeforeEach
     public void setup(){
@@ -38,13 +38,13 @@ public class PlayerServiceMockTest {
                 .id(1)
                 .name("Player1")
                 .registDate(null)
-                .games(null).build();
+                .build();
 
         playerdto1 = Playerdto.builder()
                 .id(1)
                 .name("Playerdto1")
                 .registDate(null)
-                .gamesdto(null).build();
+                .build();
     }
 
     @DisplayName("Testing method FindByName")
@@ -65,7 +65,7 @@ public class PlayerServiceMockTest {
     @Test
     public void whenCreate (){
         Player prueba = new Player();
-        Mockito.when(playerRepository.findByName("Playerdto1")).thenReturn(Optional.of(prueba));
+        Mockito.when(playerRepository.findByName("Player1")).thenReturn(Optional.of(prueba));
 
         Mockito.when(playerRepository.save(player1)).thenReturn(player1);
 
@@ -80,7 +80,7 @@ public class PlayerServiceMockTest {
     @Test
     public void whenReciveDto_ThenReturnEntity(){
 
-        Playerdto playerdto = new Playerdto(1, "Dario", null, null);
+        Playerdto playerdto = new Playerdto(1, "Dario", Calendar.getInstance());
         Player expected = playerService.dtoToEntity(playerdto);
         assertThat(expected).isNotNull();
         assertThat(expected.getName()).isEqualTo("Dario");
