@@ -42,12 +42,11 @@ public class PlayerServiceImpl implements IPlayerSevice {
                     throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Te player with name " + playerdto.getName() + " exists.");
                 }
             }
+
             Playerdto playerCreate = new Playerdto();
             playerCreate.setName(playerdto.getName());
             playerCreate.setRegistDate(Calendar.getInstance());
-            Player playerSaved = dtoToEntity(playerCreate);
-            Player re_pl = playerRepository.save(playerSaved);
-            return re_pl;
+            return  playerRepository.save(dtoToEntity(playerCreate));
     }
 
     @Override
