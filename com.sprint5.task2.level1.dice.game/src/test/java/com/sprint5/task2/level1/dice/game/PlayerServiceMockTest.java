@@ -19,6 +19,7 @@ import java.util.GregorianCalendar;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 
 
 @SpringBootTest
@@ -35,15 +36,15 @@ public class PlayerServiceMockTest {
         MockitoAnnotations.openMocks(this);
         playerService = new PlayerServiceImpl(playerRepository);
         player1 = Player.builder()
-                .id(1)
+                .id(0)
                 .name("Player1")
-                .registDate(null)
+                .registDate(Calendar.getInstance())
                 .build();
 
         playerdto1 = Playerdto.builder()
-                .id(1)
+                .id(0)
                 .name("Playerdto1")
-                .registDate(null)
+                .registDate(Calendar.getInstance())
                 .build();
     }
 
@@ -63,16 +64,16 @@ public class PlayerServiceMockTest {
     }
 
     @Test
-    public void whenCreate (){
-        Player prueba = new Player();
-        Mockito.when(playerRepository.findByName("Player1")).thenReturn(Optional.of(prueba));
+    public void whenCreate_testNameOfPlayer (){
 
-        Mockito.when(playerRepository.save(player1)).thenReturn(player1);
+        Mockito.when(playerRepository.findByName("Player1")).thenReturn(Optional.empty());
 
-        Player expected = playerService.create(playerService.entityToDto(player1));
+        Mockito.when(playerRepository.save(any())).thenReturn(player1);
 
-        assertThat(expected).isNotNull();
-        assertThat(expected.getName()).isEqualTo("Player1");
+        Player expected = playerService.create(playerdto1);//(playerService.entityToDto(player1));
+
+        //assertThat(expected).isNull();
+        assertThat(expected.getName()).isEqualTo("Player2");
     }
 
 
